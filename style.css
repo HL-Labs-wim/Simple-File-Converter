@@ -1,0 +1,277 @@
+@font-face {
+    font-family: 'Nevo';
+    src: url(Nevo.ttf) format('truetype');
+    font-weight: normal;
+    font-style: normal; 
+}
+
+* {
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+body {
+    background-color: rgb(255, 187, 0);
+    margin: 0;
+    padding: 0;
+    font-family: 'Nevo', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+html {
+    border: 10px solid #d77504c7;
+    height: 100%;
+}
+
+.main-container {
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 45px;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+/* The White Card */
+.converter-card {
+    background: white;
+    padding: 35px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 3px solid #333;
+}
+
+/* Styled File Input */
+.custom-file-upload {
+    display: block;
+    padding: 18px;
+    cursor: pointer;
+    background: #f9f9f9;
+    border: 2px dashed #d77504;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-file-upload:hover {
+    background: #fff5e6;
+    border-color: #333;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+/* Controls Group */
+.controls-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.select-wrapper label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    font-size: 16px;
+    background: white;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.reset-btn {
+    flex: 1;
+    background: transparent;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+}
+
+.reset-btn:hover {
+    background: #eee;
+    color: #333;
+}
+
+.convert-btn {
+    flex: 2;
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.convert-btn:hover {
+    background-color: #d77504;
+    transform: translateY(-2px);
+}
+
+/* Updates Button - Bottom Left */
+#UpdatesButton {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #333;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+#UpdatesButton:hover {
+    background-color: #d77504;
+    transform: translateY(-2px);
+}
+
+/* Updates Modal */
+.updates-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.updates-modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 3px solid #333;
+}
+
+.updates-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.updates-modal-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.updates-close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.updates-close:hover {
+    color: #333;
+}
+
+/* Static Updates List Styling */
+.updates-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.update-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.update-item:last-child {
+    border-bottom: none;
+}
+
+.update-date {
+    display: inline-block;
+    background-color: #d77504;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.update-item ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.update-item li {
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Footer */
+.footer-info {
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.bottom-left, .credits {
+    margin: 5px 0;
+}
+
+/* Conversion Status */
+.status-message {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+#progressFill {
+    height: 100%;
+    background-color: #d77504;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}

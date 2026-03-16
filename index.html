@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+    <title>Simple File Converter</title>
+    <link rel="icon" type="image/png" href="icon.ico">
+    <link rel="stylesheet" href="style.css"/>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.10.0/dist/ffmpeg.min.js"></script>
+</head>
+<body>
+
+<button type="button" id="UpdatesButton">Updates</button>
+
+<div id="updatesModal" class="updates-modal">
+    <div class="updates-modal-content">
+        <div class="updates-modal-header">
+            <h2>What's New</h2>
+            <span class="updates-close" onclick="closeUpdatesModal()">&times;</span>
+        </div>
+        <div class="updates-list">
+            <!-- EDIT YOUR UPDATES HERE -->
+            <div class="update-item">
+                <span class="update-date">Mar 16, 2026</span>
+                <ul>
+                    <li>Added video to audio conversion</li>
+                    <li>Added support for MP4, WebM, AVI, MOV formats</li>
+                    <li>Fixed FFmpeg.wasm integration</li>
+                </ul>
+            </div>
+            <div class="update-item">
+                <span class="update-date">Mar 16, 2026</span>
+                <ul>
+                    <li>Initial release with image conversion</li>
+                    <li>Added PNG, JPEG, WEBP, GIF support</li>
+                </ul>
+            </div>
+            <!-- ADD MORE UPDATES ABOVE THIS LINE -->
+        </div>
+    </div>
+</div>
+
+<div class="main-container">
+    <h1>Simple File Converter</h1>
+
+    <div class="converter-card">
+        <div class="input-group">
+            <label for="fileInput" class="custom-file-upload">
+                <span id="fileNameDisplay">Choose File</span>
+                <input type="file" id="fileInput" accept="image/*,video/*,audio/*">
+            </label>
+        </div>
+
+        <div class="controls-group">
+            <div class="select-wrapper">
+                <label for="formatSelect">Target Format:</label>
+                <select id="formatSelect">
+                    <optgroup label="Image Formats">
+                        <option value="image/png">PNG</option>
+                        <option value="image/jpeg">JPEG</option>
+                        <option value="image/webp">WEBP</option>
+                        <option value="image/svg">SVG</option>
+                        <option value="image/avif">AVIF</option>
+                        <option value="image/gif">GIF</option>
+                        <option value="image/ico">ICO</option>
+                        <option value="image/bmp">BMP</option>
+                        <option value="image/tiff">TIFF</option>
+                        <option value="image/heic">HEIC</option>
+                    </optgroup>
+                    <optgroup label="Video Formats">
+                        <option value="video/mp4">MP4</option>
+                        <option value="video/webm">WebM</option>
+                        <option value="video/avi">AVI</option>
+                        <option value="video/mov">MOV</option>
+                        <option value="video/mpeg">MPEG</option>
+                        <option value="video/mkv">MKV</option>
+                        <option value="video/flv">FLV</option>
+                        <option value="video/wmv">WMV</option>
+                    </optgroup>
+                    <optgroup label="Audio Formats">
+                        <option value="audio/mp3">MP3</option>
+                        <option value="audio/wav">WAV</option>
+                        <option value="audio/ogg">OGG</option>
+                        <option value="audio/aac">AAC</option>
+                        <option value="audio/flac">FLAC</option>
+                        <option value="audio/m4a">M4A</option>
+                        <option value="audio/wma">WMA</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="reset-btn" onclick="clearConverter()">Clear</button>
+                <button class="convert-btn" onclick="convertFile()">Convert & Download</button>
+            </div>
+            
+            <div id="conversionStatus" style="display: none; margin-top: 15px;">
+                <div class="status-message">
+                    <span id="statusText">Initializing...</span>
+                    <div class="progress-bar">
+                        <div id="progressFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        <p class="bottom-left">Learning the basics of web coding and HTML</p>
+        <p class="credits">Made by <strong>Jackson Terceira</strong></p>
+    </div>
+</div>
+
+<canvas id="canvas" style="display:none;"></canvas>
+<img id="imageToConvert" style="display:none;">
+<video id="videoToConvert" style="display:none;"></video>
+
+<script src="index.js"></script>
+
+</body>
+</html>
