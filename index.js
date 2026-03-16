@@ -125,59 +125,98 @@ function convertImage() {
 async function convertWithFFmpeg(file, targetFormat) {
     try {
         showConversionStatus(true);
-        statusText.textContent = 'Uploading file to server...';
-        updateProgress(10);
-
-        const targetExtension = targetFormat.split('/')[1];
         
-        // Create form data for file upload
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('targetFormat', targetFormat);
-
-        // Upload and convert
-        const response = await fetch(`${API_URL}/convert`, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Conversion failed');
+        // Load FFmpeg if not already loaded
+        if (!isFFmpegLoaded) {
+            statusText.textContent = 'Loading FFmpeg core...';
+            if (!ffmpeg.isLoaded()) {
+                await ffmpeg.load();
+            }
+            isFFmpegLoaded = true;
         }
-
-        statusText.textContent = 'Processing on server...';
-        updateProgress(50);
-
-        // Get the converted file as blob
-        const blob = await response.blob();
         
-        statusText.textContent = 'Downloading...';
-        updateProgress(90);
-
+        statusText.textContent = 'Preparing file...';
+        
+        const targetExtension = targetFormat.split('/')[1];
+        const inputFileName = file.name;
+        const outputFileName = `output.${targetExtension}`;
+        
+        // Write input file to FFmpeg virtual filesystem
+        await ffmpeg.FS('writeFile', inputFileName, await fetchFile(file));
+        
+        statusText.textContent = 'Converting...';
+        
+        // Build FFmpeg command based on target format
+        let ffmpegArgs = [];
+        
+        if (targetFormat.startsWith('audio/')) {
+            // Audio conversion
+            if (targetExtension === 'mp3') {
+                ffmpegArgs = ['-i', inputFileName, '-q:a', '2', '-map', 'a', outputFileName];
+            } else if (targetExtension === 'wav') {
+                ffmpegArgs = ['-i', inputFileName, '-c:a', 'pcm_s16le', outputFileName];
+            } else if (targetExtension === 'aac') {
+                ffmpegArgs = ['-i', inputFileName, '-c:a', 'aac', '-b:a', '192k', outputFileName];
+            } else if (targetExtension === 'flac') {
+                ffmpegArgs = ['-i', inputFileName, '-c:a', 'flac', outputFileName];
+            } else if (targetExtension === 'ogg') {
+                ffmpegArgs = ['-i', inputFileName, '-c:a', 'libvorbis', outputFileName];
+            } else if (targetExtension === 'm4a') {
+                ffmpegArgs = ['-i', inputFileName, '-c:a', 'aac', '-b:a', '192k', outputFileName];
+            } else {
+                ffmpegArgs = ['-i', inputFileName, '-c:a', 'libmp3lame', outputFileName];
+            }
+        } else if (targetFormat.startsWith('video/')) {
+            // Video conversion
+            if (targetExtension === 'mp4') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'libx264', '-c:a', 'aac', '-preset', 'fast', outputFileName];
+            } else if (targetExtension === 'webm') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'libvpx-vp9', '-c:a', 'libopus', outputFileName];
+            } else if (targetExtension === 'avi') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'libxvid', '-c:a', 'mp3', outputFileName];
+            } else if (targetExtension === 'mov') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'libx264', '-c:a', 'aac', '-movflags', '+faststart', outputFileName];
+            } else if (targetExtension === 'mkv') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'libx264', '-c:a', 'aac', outputFileName];
+            } else if (targetExtension === 'mpeg') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'mpeg1video', '-c:a', 'mp2', outputFileName];
+            } else if (targetExtension === 'flv') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'flv', '-c:a', 'aac', outputFileName];
+            } else if (targetExtension === 'wmv') {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'wmv2', '-c:a', 'wmav2', outputFileName];
+            } else {
+                ffmpegArgs = ['-i', inputFileName, '-c:v', 'libx264', '-c:a', 'aac', outputFileName];
+            }
+        }
+        
+        // Execute FFmpeg command
+        await ffmpeg.run(...ffmpegArgs);
+        
+        statusText.textContent = 'Finalizing...';
+        
+        // Read the output file
+        const data = ffmpeg.FS('readFile', outputFileName);
+        const blob = new Blob([data.buffer], { type: targetFormat });
+        
         // Create download link
         const url = URL.createObjectURL(blob);
-        const contentDisposition = response.headers.get('content-disposition');
-        const filename = contentDisposition ? 
-            contentDisposition.split('filename=')[1]?.replace(/["']/g, '') : 
-            `converted-${Date.now()}.${targetExtension}`;
-        
         const link = document.createElement('a');
         link.href = url;
-        link.download = filename;
+        link.download = `converted-${Date.now()}.${targetExtension}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         
+        // Clean up
         URL.revokeObjectURL(url);
-        updateProgress(100);
+        
         showConversionStatus(false);
         
     } catch (error) {
         console.error('Conversion error:', error);
         statusText.textContent = 'Conversion failed';
         showConversionStatus(false);
-        alert('Conversion failed: ' + error.message + '\n\nMake sure the server is running at ' + API_URL);
+        alert('Conversion failed: ' + error.message + '\n\nNote: FFmpeg.wasm requires COOP/COEP headers. For local testing, use a server like:\npython -m http.server 8000\nwith proper headers configured.');
     }
 }
 
